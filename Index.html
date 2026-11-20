@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b5cab">
+<title>Kalkulator KSG - Bank Sumsel Babel</title>
+<style>
+:root{--blue:#0878d1;--navy:#064477;--bg:#f2f5f9;--text:#17212b;--muted:#687785;--line:#e3e9ef;--green:#087a45;--red:#d92d20}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
+.app{display:flex;min-height:100vh}
+.sidebar{width:250px;flex:0 0 250px;background:#effaff;color:#087fbd;padding:28px 18px;border-right:1px solid #d5effa}
+.brand{font-size:18px;font-weight:700;line-height:1.4;padding:0 12px 26px;border-bottom:1px solid #d5effa}
+.brand-logo{display:block;width:100%;max-width:205px;height:auto;object-fit:contain;margin:0 auto 14px;background:#fff;border-radius:6px;padding:6px;box-sizing:border-box}
+.brand small{display:block;font-size:12px;font-weight:600;color:#278dbb;opacity:1;margin-top:5px}
+.nav-title{font-size:11px;letter-spacing:1.2px;color:#5c9fbd;opacity:1;margin:28px 12px 12px}
+.nav-btn{display:block;width:100%;text-align:left;border:1px solid transparent;background:transparent;color:#287fa5;padding:14px 13px;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;margin:5px 0;transition:background .15s ease,color .15s ease}
+.nav-btn:hover{background:#e0f5ff;color:#087fbd}.nav-btn.active{background:#d8f2ff;color:#007fbd;border-color:#b8e8fa;box-shadow:inset 3px 0 0 #00a8e8}
+.main{flex:1;padding:30px 24px;min-width:0}
+.calculator-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.9fr);gap:24px;align-items:start}
+.calculator-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.9fr);gap:24px;align-items:start}
+.card{max-width:980px;margin:0 auto;background:#fff;border-radius:18px;padding:30px 32px;box-shadow:0 8px 26px rgba(20,45,70,.10)}
+header{text-align:center;margin-bottom:26px}
+h1{font-size:clamp(25px,5vw,34px);margin:4px 0 8px;color:#101820}
+.subtitle{color:#66717c;font-size:16px}
+.field{margin:0 0 17px}
+label{display:block;font-weight:700;font-size:17px;margin:0 0 8px}
+input,select{width:100%;height:49px;border:1px solid #dce3e9;border-radius:9px;padding:0 13px;font-size:17px;background:#fff;color:#17212b;outline:none}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(8,120,209,.12)}
+select{background:#f0f2f4}
+button#calculate{width:100%;border:0;border-radius:9px;background:#00a8e8;color:#fff;font-size:17px;padding:15px 12px;margin:8px 0 22px;cursor:pointer}
+button#calculate:hover{background:#078fc8}
+.results{background:#f8fafc;border:1px solid #edf1f5;border-radius:12px;padding:20px}
+.row{display:flex;justify-content:space-between;gap:16px;padding:7px 0;font-size:16px}
+.row strong{text-align:right}
+.divider{border-top:1px solid #aeb8c2;margin:9px 0}
+.total{font-weight:700;font-size:18px}
+.warning{margin:17px 0 2px;font-weight:700;line-height:1.45}
+.warning.bad{color:var(--red)} .warning.good{color:var(--green)}
+.note{font-size:12px;color:var(--muted);line-height:1.5;margin:14px 2px 0}
+footer{text-align:center;color:#89939c;font-size:13px;margin:28px 0 4px}
+@media(max-width:760px){.app{display:block}.sidebar{width:100%;padding:14px}.brand{padding:4px 8px 12px}.brand-logo{max-width:160px;margin:0 0 8px}.nav-title{display:none}.nav-list{display:flex;gap:6px;overflow-x:auto;padding-top:10px}.nav-btn{white-space:nowrap;width:auto;margin:0;padding:11px 13px}.main{padding:16px 10px}}
+@media(max-width:680px){.calculator-layout{grid-template-columns:1fr;gap:8px}}
+@media(max-width:520px){.card{padding:23px 17px;border-radius:15px}.row{font-size:14px}.total{font-size:16px}.results{padding:16px}label{font-size:16px}}
+@media print{body{background:#fff;padding:0}.card{box-shadow:none;max-width:none}.no-print{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">
+    <img class="brand-logo" src="data:image/png;base64,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" alt="Logo Bank Sumsel Babel">
+    <small>Cabang Muara Enim</small>
+  </div>
+  <div class="nav-title">MENU KALKULATOR</div>
+  <nav class="nav-list" aria-label="Menu kalkulator">
+    <button class="nav-btn active" data-mode="aktif">Aktif</button>
+    <button class="nav-btn" data-mode="pensiun">Pensiun</button>
+    <button class="nav-btn" data-mode="sertifikasi">Sertifikasi</button>
+  </nav>
+</aside>
+<div class="main">
+<main class="card">
+<header>
+<h1 id="pageTitle">Kalkulator Aktif</h1>
+<div class="subtitle">Bank Sumsel Babel Cabang Muara Enim</div>
+</header>
+
+<div class="calculator-layout">
+<section class="inputs">
+<div class="field">
+<label for="loanType">Jenis Pengajuan</label>
+<select id="loanType">
+<option value="baru">Baru</option>
+<option value="topup">Top Up</option>
+<option value="takeover">Take Over</option>
+</select>
+</div>
+<div class="field">
+<label for="plafond">Jumlah Plafond (Rp)</label>
+<input id="plafond" inputmode="numeric" placeholder="Contoh: 100.000.000" autocomplete="off">
+</div>
+<div class="field">
+<label for="dob">Tanggal Lahir (Tanggal-Bulan-Tahun)</label>
+<input id="dob" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
+<small class="retirement-info" id="ageInfo">Usia: -</small>
+</div>
+<div class="field">
+<div id="activeRetirementField">
+<label for="employeeType">Jenis Pegawai</label>
+<select id="employeeType">
+<option value="guru">Guru</option>
+<option value="non_guru">Non Guru</option>
+</select>
+</div>
+<div id="pensionLimitField" style="display:none">
+<label for="pensionLimit">Batas Umur</label>
+<select id="pensionLimit">
+<option value="70">70 Tahun</option>
+<option value="75">75 Tahun</option>
+</select>
+</div>
+<small class="retirement-info" id="retirementInfo">Sisa masa kerja : -</small>
+</div>
+<div class="field">
+<label for="tenor">Jangka Waktu (Bulan)</label>
+<input id="tenor" type="number" min="0" max="360" step="1" placeholder="Contoh: 120">
+</div>
+<div class="field">
+<label for="salary">Gaji Pegawai (Rp)</label>
+<input id="salary" inputmode="numeric" placeholder="Contoh: 3.000.000" autocomplete="off">
+</div>
+<div class="field">
+<label for="oldLoan">Sisa Pinjaman Lama (Top Up) (Rp)</label>
+<input id="oldLoan" inputmode="numeric" placeholder="Isi 0 jika tidak ada" autocomplete="off">
+</div>
+<div class="field">
+<label for="insuranceType">Pilihan Asuransi</label>
+<select id="insuranceType">
+<option value="askrida">Askrida</option>
+<option value="jamkrida">Jamkrida</option>
+<option value="eka">Eka Lloyd</option>
+</select>
+<small class="retirement-info" id="insuranceCoverageNote" style="display:none"></small>
+</div>
+<button class="no-print" id="calculate">Hitung Angsuran</button>
+</section>
+
+<section class="results" aria-live="polite">
+<div class="row"><span>Plafond Kredit</span><strong id="outputPlafond">Rp 0</strong></div>
+<div class="row"><span>Angsuran / Bulan</span><strong id="installment">Rp 0</strong></div>
+<div class="row"><span>Sisa Gaji</span><strong id="remaining">Rp 0</strong></div>
+<div class="row"><span>Persentase Angsuran</span><strong id="percent">0,00%</strong></div>
+
+<div class="divider"></div>
+<div class="row"><span>Biaya Administrasi (<span id="adminRateLabel">1%</span>)</span><span id="admin">Rp 0</span></div>
+<div class="row"><span>Premi Asuransi (<span id="insuranceName">Askrida</span>)</span><span id="insurance">Rp 0</span></div>
+<div class="row"><span>Tabungan Beku (1x Angsuran)</span><span id="frozen">Rp 0</span></div>
+<div class="row"><span>Sisa Pinjaman Lama</span><span id="oldDeduction">Rp 0</span></div>
+<div class="divider"></div>
+<div class="row total"><span>Hasil Bersih Diterima</span><strong id="net">Rp 0</strong></div>
+<div id="warning" class="warning" role="status"></div>
+</section>
+</div>
+<footer>© 2026 M Ari Sandy - Admin Kredit</footer>
+</main>
+</div>
+</div>
+<script>
+let calculatorMode = 'aktif';
+const $ = id => document.getElementById(id);
+function setCalculatorMode(mode){
+  calculatorMode = mode;
+  document.querySelectorAll('.nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.mode===mode));
+  const titles={aktif:'Kalkulator Aktif',pensiun:'Kalkulator Pensiun',sertifikasi:'Kalkulator Sertifikasi'};
+  $('pageTitle').textContent=titles[mode];
+  $('activeRetirementField').style.display=mode==='aktif'?'block':'none';
+  $('pensionLimitField').style.display=mode==='pensiun'?'block':'none';
+  $('retirementInfo').style.display=mode==='sertifikasi'?'none':'block';
+  updateInsuranceCoverageNote();
+  $('adminRateLabel').textContent=mode==='aktif'?'1%':'1,5%';
+  document.title=titles[mode]+' - Bank Sumsel Babel';
+  calculate();
+}
+document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>setCalculatorMode(btn.dataset.mode)));
+
+function updateInsuranceCoverageNote(){
+  const note=$('insuranceCoverageNote');
+  if(!note) return;
+  if(calculatorMode!=='pensiun'){
+    note.style.display='none';
+    note.textContent='';
+    return;
+  }
+  note.style.display='block';
+  const insurer=$('insuranceType').value;
+  note.textContent=insurer==='askrida'
+    ? 'Catatan: Askrida cover sampai usia 75 tahun.'
+    : 'Catatan: Jamkrida & Eka Lloyd cover sampai usia 70 tahun.';
+}
+
+const rupiah = n => 'Rp ' + Math.round(Number.isFinite(n) ? n : 0).toLocaleString('id-ID');
+function parseMoney(value){
+  const digits = String(value).replace(/[^\d]/g,'');
+  return digits ? Number(digits) : 0;
+}
+function formatInput(el){
+  if(!el.value.trim()) return;
+  const n=parseMoney(el.value);
+  el.value=n.toLocaleString('id-ID');
+}
+['plafond','salary','oldLoan'].forEach(id=>{
+  const el=$(id);
+  el.addEventListener('input',()=>{const pos=el.selectionStart;});
+  el.addEventListener('blur',()=>formatInput(el));
+});
+function parseBirthDate(){
+  const value=$('dob').value.trim();
+  const match=value.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if(!match) return null;
+  const day=Number(match[1]), month=Number(match[2]), year=Number(match[3]);
+  const date=new Date(year,month-1,day);
+  if(date.getFullYear()!==year || date.getMonth()!==month-1 || date.getDate()!==day) return null;
+  return date;
+}
+function getAgeDetail(){
+  const birthDate=parseBirthDate();
+  if(!birthDate) return null;
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  if(birthDate>today) return null;
+
+  let years=today.getFullYear()-birthDate.getFullYear();
+  let months=today.getMonth()-birthDate.getMonth();
+  let days=today.getDate()-birthDate.getDate();
+
+  if(days<0){
+    months--;
+    const previousMonthDays=new Date(today.getFullYear(),today.getMonth(),0).getDate();
+    days+=previousMonthDays;
+  }
+  if(months<0){
+    years--;
+    months+=12;
+  }
+  return {years,months};
+}
+function updateAgeDisplay(){
+  const detail=getAgeDetail();
+  $('ageInfo').textContent=detail
+    ? `Usia: ${detail.years} tahun ${detail.months} bulan`
+    : 'Usia: -';
+}
+function getAge(){
+  const birthDate=parseBirthDate();
+  if(!birthDate) return null;
+  const today=new Date();
+  let age=today.getFullYear()-birthDate.getFullYear();
+  const birthdayThisYear=new Date(today.getFullYear(),birthDate.getMonth(),birthDate.getDate());
+  if(today<birthdayThisYear) age--;
+  return age;
+}
+function getRemainingMonths(){
+  const birthDate=parseBirthDate();
+  if(!birthDate) return null;
+  if(calculatorMode==='sertifikasi') return Infinity;
+  const age=calculatorMode==='pensiun'
+    ? Number($('pensionLimit').value)
+    : ($('employeeType').value==='guru' ? 60 : 58);
+  const retirementDate=new Date(birthDate.getFullYear()+age,birthDate.getMonth(),birthDate.getDate());
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  if(retirementDate<=today) return 0;
+  let months=(retirementDate.getFullYear()-today.getFullYear())*12
+    +(retirementDate.getMonth()-today.getMonth());
+  if(retirementDate.getDate()<today.getDate()) months-=1;
+  return months;
+}
+const jamkridaRates = {
+  young: [0.395,0.774,1.104,1.472,1.829,2.170,2.521,2.873,3.230,3.566,3.890,4.192,4.490,4.781,5.084,5.391,5.711,6.030,6.343,6.657],
+  middle:[0.448,0.878,1.255,1.674,2.080,2.467,2.880,3.315,3.772,4.234,4.700,5.168,5.650,6.129,6.612,6.862,7.162,7.512,7.912,8.362],
+  senior:[2.039,3.256,4.512,5.803,7.130,8.985,10.391,11.813,13.257,14.737]
+};
+const ekaRates=[0.380,0.730,0.990,1.320,1.630,1.910,2.210,2.510,2.820,3.090,3.340,3.550,3.750,3.940,4.150,4.370,4.610,4.850,5.080,5.310];
+function getInsurancePremium(plafond, tenorMonths, age){
+  const years=Math.ceil(tenorMonths/12);
+  const type=$('insuranceType').value;
+  let rate, premium, name;
+  if(type==='askrida'){
+    name='Askrida';
+    if(age>60){
+      rate=12; // per mil per tahun
+      premium=plafond*rate/1000*years;
+      return {name,rateLabel:'12‰ × '+years+' tahun',premium,years};
+    }
+    rate=3.19; // per mil per tahun
+    premium=plafond*rate/1000*years;
+    return {name,rateLabel:'3,19‰ × '+years+' tahun',premium,years};
+  }
+  if(type==='jamkrida'){
+    name='Jamkrida';
+    const band=age<=45?'young':age<=55?'middle':'senior';
+    const rates=jamkridaRates[band];
+    if(years>rates.length) return {error:`Tarif Jamkrida untuk kategori usia ini hanya tersedia sampai ${rates.length} tahun.`};
+    rate=rates[years-1];
+    premium=plafond*rate/100;
+    return {name,rateLabel:rate.toLocaleString('id-ID',{minimumFractionDigits:3,maximumFractionDigits:3})+'%',premium,years};
+  }
+  name='Eka Lloyd';
+  if(years>ekaRates.length) return {error:'Tarif Eka Lloyd pada tabel hanya tersedia sampai 20 tahun.'};
+  rate=ekaRates[years-1];
+  premium=plafond*rate/100;
+  return {name,rateLabel:rate.toLocaleString('id-ID',{minimumFractionDigits:3,maximumFractionDigits:3})+'%',premium,years};
+}
+function calculate(){
+  const plafond=parseMoney($('plafond').value);
+  const tenor=Number($('tenor').value);
+  const remainingMonths=getRemainingMonths();
+  $('retirementInfo').textContent='Sisa masa kerja : '+(remainingMonths===null ? '-' : remainingMonths===Infinity ? 'Tidak dibatasi' : remainingMonths.toLocaleString('id-ID')+' Bulan');
+  const salary=parseMoney($('salary').value);
+  const oldLoan=parseMoney($('oldLoan').value);
+  const limitRate=.90;
+  const warning=$('warning');
+  if(plafond<=0 || !Number.isInteger(tenor) || tenor<1 || tenor>360 || salary<=0 || oldLoan<0){
+    warning.className='warning';
+    warning.textContent='';
+    return;
+  }
+  if(!parseBirthDate()){
+    warning.className='warning';
+    warning.textContent='';
+    return;
+  }
+  if(remainingMonths===0){
+    warning.className='warning';
+    warning.textContent='';
+    return;
+  }
+  const age=getAge();
+  const insuranceResult=getInsurancePremium(plafond,tenor,age);
+  if(insuranceResult.error){
+    warning.className='warning';
+    warning.textContent='';
+    return;
+  }
+  const annualRate=calculatorMode==='sertifikasi' ? .145 : .095;
+  const monthlyRate=annualRate/12;
+  const installment=plafond*monthlyRate/(1-Math.pow(1+monthlyRate,-tenor));
+  const adminRate=$('loanType').value==='takeover' ? .005 : (calculatorMode==='aktif' ? .01 : .015);
+  const admin=plafond*adminRate;
+  $('adminRateLabel').textContent=(adminRate*100).toLocaleString('id-ID',{maximumFractionDigits:1})+'%';
+  const insurance=insuranceResult.premium;
+  const frozen=installment;
+  const remaining=salary-installment;
+  const percent=installment/salary*100;
+  const net=plafond-admin-insurance-frozen-oldLoan;
+  $('outputPlafond').textContent=rupiah(plafond);
+  $('installment').textContent=rupiah(installment);
+  $('remaining').textContent=rupiah(remaining);
+  $('percent').textContent=percent.toLocaleString('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+  $('admin').textContent=rupiah(admin);
+  $('insuranceName').textContent=insuranceResult.name;
+  $('insurance').textContent=rupiah(insurance);
+  $('frozen').textContent=rupiah(frozen);
+  $('oldDeduction').textContent=rupiah(oldLoan);
+  $('net').textContent=rupiah(net);
+  if(percent>95){
+    warning.className='warning bad';
+    warning.textContent='⚠️ Kurangi Plafond / Tambah Jangka Waktu';
+  }else if(percent>=90){
+    warning.className='warning bad';
+    warning.textContent='⚠️ Tambahkan Surat Ket. TPP / Sertifikasi';
+  }else{
+    warning.className='warning good';
+    warning.textContent='✓ Angsuran berada dalam batas yang ditentukan.';
+  }
+}
+$('calculate').addEventListener('click',calculate);
+$('dob').addEventListener('input',e=>{
+  const digits=e.target.value.replace(/\D/g,'').slice(0,8);
+  e.target.value=digits.length>4 ? digits.slice(0,2)+'-'+digits.slice(2,4)+'-'+digits.slice(4)
+    : digits.length>2 ? digits.slice(0,2)+'-'+digits.slice(2) : digits;
+  updateAgeDisplay();
+  const months=getRemainingMonths();
+  $('retirementInfo').textContent='Sisa masa kerja : '+(months===null ? '-' : months===Infinity ? 'Tidak dibatasi' : months.toLocaleString('id-ID')+' Bulan');
+});
+['tenor','employeeType','pensionLimit','loanType'].forEach(id=>$(id).addEventListener('change',calculate));
+$('insuranceType').addEventListener('change',()=>{updateInsuranceCoverageNote();calculate();});
+$('dob').addEventListener('change',()=>{updateAgeDisplay();calculate();});
+updateAgeDisplay();
+calculate();
+</script>
+</body>
+</html>
