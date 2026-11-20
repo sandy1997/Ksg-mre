@@ -1,0 +1,2 @@
+# Ksg-mre
+Kalkulator KSG
